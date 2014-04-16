@@ -1,0 +1,7 @@
+D:\Project\git\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.exe
+D:\Project\git\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.pdb
+D:\Project\git\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Main.resources
+D:\Project\git\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Properties.Resources.resources
+D:\Project\git\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.csproj.GenerateResource.Cache
+D:\Project\git\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.exe
+D:\Project\git\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.pdb
