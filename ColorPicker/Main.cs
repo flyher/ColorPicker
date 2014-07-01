@@ -65,7 +65,8 @@ namespace ColorPicker
                 color = item.Value;
             }
             pbColor.BackColor = c;
-            txtColor.Text = color.ToUpper();
+            //txtColor.Text = color.ToUpper();
+            txtColor.Text = color;
         }
         #region 内部方法
         /*屏幕取色*/
@@ -77,7 +78,9 @@ namespace ColorPicker
             r = c.R;
             g = c.G;
             b = c.B;
-            string res = "#" + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(r, 16)) + (Convert.ToString(g, 16) == "0" ? "00" : Convert.ToString(g, 16)) + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(b, 16));  //rgb文本框写的内容
+            //这种方式不准确，使用系统自带的转换方式
+            //string res = "#" + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(r, 16)) + (Convert.ToString(g, 16) == "0" ? "00" : Convert.ToString(g, 16)) + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(b, 16));  //rgb文本框写的内容
+            string res = System.Drawing.ColorTranslator.ToHtml(c).ToUpper();
             Dictionary<Color, string> dic_Color = new Dictionary<Color, string>();
             dic_Color.Add(c, res);
             //System.GC.Collect();        //内存垃圾回收
