@@ -14,6 +14,7 @@ namespace ColorPicker
         /// <summary>
         /// build:2014-02-27
         /// update:2014-04-16
+        /// update:2016-03-10
         /// </summary>
         public Main()
         {
@@ -27,6 +28,21 @@ namespace ColorPicker
         private void txtColor_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Clipboard.SetDataObject(txtColor.Text.Trim());
+        }
+
+        private void txtR_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(txtR.Text.Trim());
+        }
+
+        private void txtG_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(txtG.Text.Trim());
+        }
+
+        private void txtB_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetDataObject(txtB.Text.Trim());
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -65,8 +81,12 @@ namespace ColorPicker
                 color = item.Value;
             }
             pbColor.BackColor = c;
-            //txtColor.Text = color.ToUpper();
             txtColor.Text = color;
+
+            txtR.Text = c.R.ToString();
+            txtG.Text = c.G.ToString();
+            txtB.Text = c.B.ToString();
+
         }
         #region 内部方法
         /*屏幕取色*/
@@ -104,6 +124,7 @@ namespace ColorPicker
                 return bmp.GetPixel(pt.X, pt.Y);
             }
         }
+
         #endregion
 
 

@@ -3,6 +3,15 @@ ColorPicker
 
 ######A tool to pick web/window color,which is a good style to help design your web.<br>
 
+![](file/screenshot.png)
+
+===
+
+更新时间:2016-03-10
+
+增加:
+1.R，G，B色值显示
+
 ===
 
 更新时间:2014-07-01
@@ -28,3 +37,6 @@ ColorPicker
 
 1.某些蓝色和某些青色取色失败.
 
+###License
+
+Code in the ColorPicker project is licensed under the Apache License.
