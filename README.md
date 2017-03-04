@@ -1,9 +1,19 @@
 ColorPicker
 ===========
 
-######A tool to pick web/window color,which is a good style to help design your web.<br>
+######A tool to pick web/window color, help design your soft.
 
 ![](file/screenshot.png)
+
+===
+2017-03-04
+
+已知bug：
+
+取多屏颜色时程序错误。
+
+懒得改了，目前只要将需要取色的地方移到主屏就行了。
+
 
 ===
 
