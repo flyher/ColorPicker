@@ -1,7 +1,7 @@
 ColorPicker
 ===========
 
-######A tool to pick web/window color, help design your soft.
+###### A tool to pick web/window color, help design your soft.
 
 ![](file/screenshot.png)
 
@@ -47,6 +47,6 @@ ColorPicker
 
 1.某些蓝色和某些青色取色失败.
 
-###License
+### License
 
 Code in the ColorPicker project is licensed under the GPL.
