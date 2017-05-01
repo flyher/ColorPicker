@@ -21,3 +21,11 @@ E:\Work\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.pdb
 E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Main.resources
 E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Properties.Resources.resources
 E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.csproj.GenerateResource.Cache
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.exe
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.pdb
+D:\Work\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.exe
+D:\Work\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.pdb
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Main.resources
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Properties.Resources.resources
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.csproj.GenerateResource.Cache
+D:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.csprojResolveAssemblyReference.cache
