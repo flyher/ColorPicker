@@ -14,3 +14,10 @@ E:\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Properties.Resources.re
 E:\git\ColorPicker\ColorPicker\obj\x86\Debug\GenerateResource.read.1.tlog
 E:\git\ColorPicker\ColorPicker\obj\x86\Debug\GenerateResource.write.1.tlog
 E:\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.pdb
+E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.exe
+E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.pdb
+E:\Work\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.exe
+E:\Work\git\ColorPicker\ColorPicker\bin\Debug\ColorPicker.pdb
+E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Main.resources
+E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.Properties.Resources.resources
+E:\Work\git\ColorPicker\ColorPicker\obj\x86\Debug\ColorPicker.csproj.GenerateResource.Cache
