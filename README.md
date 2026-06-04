@@ -40,7 +40,7 @@ GitHub Actions 提供手动发布流水线：
 
 [.github/workflows/release.yml](.github/workflows/release.yml)
 
-运行 `Build and Release`，输入构建 ref 和 release tag。流水线会构建 `ColorPicker.exe`，压缩为 ZIP，并发布到 GitHub Release。
+运行 `Build and Release`，选择 workflow 分支并输入 release tag。`build_ref` 可留空；仅在需要构建其他分支、tag 或 SHA 时填写。
 
 ## 文档
 

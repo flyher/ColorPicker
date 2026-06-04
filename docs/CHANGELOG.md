@@ -15,6 +15,7 @@
 - 删除 Client Profile，保持 `x86` 平台目标。
 - 取色方式从整屏截图改为 Win32 `GetDC/GetPixel` 单像素读取。
 - 精简 README，仅保留使用、兼容性、构建、发布和文档入口。
+- 将 GitHub Actions 的 `build_ref` 改为可选，默认构建手动触发页面选择的分支。
 
 ### Fixed
 

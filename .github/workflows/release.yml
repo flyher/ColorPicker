@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       build_ref:
-        description: "Branch, tag, or commit SHA to build"
-        required: true
-        default: "master"
+        description: "Optional branch, tag, or commit SHA. Leave empty to build the selected workflow branch"
+        required: false
         type: string
       release_tag:
         description: "Release tag to create, for example v1.3.0"
@@ -46,7 +45,7 @@ jobs:
       - name: Checkout selected ref
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.build_ref }}
+          ref: ${{ inputs.build_ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Setup MSBuild
@@ -99,7 +98,7 @@ jobs:
         id: notes
         shell: pwsh
         env:
-          BUILD_REF: ${{ inputs.build_ref }}
+          BUILD_REF: ${{ inputs.build_ref || github.ref_name }}
           RELEASE_TAG: ${{ inputs.release_tag }}
           RELEASE_NAME: ${{ inputs.release_name }}
           ZIP_NAME: ${{ steps.package.outputs.zip_name }}
