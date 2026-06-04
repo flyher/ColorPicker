@@ -115,6 +115,7 @@ jobs:
 
           $sha = (git rev-parse HEAD).Trim()
           $shortSha = (git rev-parse --short=12 HEAD).Trim()
+          $sourceRef = "${{ inputs.build_ref || github.ref_name }}"
           $commitUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/commit/$sha"
           $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
           $runnerLabel = "$($env:GITHUB_RUN_NUMBER) / attempt $($env:GITHUB_RUN_ATTEMPT)"
@@ -123,14 +124,14 @@ jobs:
           $lines = @(
             "## Trace",
             "",
+            "- Branch: ``$sourceRef``",
             "- Commit: [$shortSha]($commitUrl)",
             "- Runner: [$runnerLabel]($runUrl)",
             "",
             "## File Hashes",
             "",
-            "| Field | Value |",
+            "| zip | check |",
             "|---|---|",
-            "| File | ``$($env:ZIP_NAME)`` |",
             "| MD5 | ``$($env:ZIP_MD5)`` |",
             "| SHA256 | ``$($env:ZIP_SHA256)`` |"
           )

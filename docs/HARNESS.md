@@ -21,7 +21,7 @@
 
 - [x] 从 `.NET Framework 4.0 Client Profile` 升级到 `.NET Framework 4.8`
 - [x] 删除 Client Profile
-- [x] 新增 `App.config` 高 DPI 配置
+- [x] 在程序启动时声明 DPI aware，改善高 DPI 模糊
 - [x] 移除自定义 `app.manifest` 嵌入，避免 side-by-side 启动错误
 - [x] 修复多显示器取色坐标问题
 - [x] 取色改为 Win32 `GetDC/GetPixel` 单像素读取
