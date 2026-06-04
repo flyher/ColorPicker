@@ -2,94 +2,51 @@
 
 English | [简体中文](README.md)
 
-A lightweight, direct screen color picker for Windows desktop.
+A lightweight screen color picker for Windows.
 
 ![ColorPicker screenshot](file/screenshot.png)
 
-## Highlights
+## Features
 
-- Pick the color of the pixel under the mouse in real time
-- Display HEX, R, G, and B values
-- Double-click to copy the HEX value or a single RGB channel value
+- Pick the color under the mouse in real time
+- Display and copy HEX / RGB values
 - Edit RGB values manually after stopping live picking
-- Fixes the legacy multi-monitor picking issue
-- Uses Win32 single-pixel reading instead of frequent full-screen captures
-- Targets .NET Framework 4.8 for a compatibility path from Windows 7 SP1 to Windows 11
-- Includes baseline high DPI configuration for modern displays
+- Support multi-monitor color picking
+- Target .NET Framework 4.8
 
-## Quick Start
+## Usage
 
-Click `Start(P)` to begin picking colors. Move the mouse and the current pixel color updates in real time.
+Click `Start(P)` to start picking, and `Stop(E)` to stop.
 
-Click `Stop(E)` to edit R, G, and B values manually. The preview panel updates with the edited color.
-
-Copy behavior:
-
-- Double-click the HEX field to copy the full color value, for example `#04A85F`
-- Double-click the R / G / B fields to copy a single channel value
+Double-click the HEX, R, G, or B field to copy its value.
 
 ## Compatibility
 
-Recommended operating systems:
-
-- Windows 7 SP1
-- Windows 10
-- Windows 11
-
-Runtime requirement:
-
-- .NET Framework 4.8 or a later in-place .NET Framework 4.x update
-
-Notes:
-
-- Recent Windows 10 versions usually include .NET Framework 4.8.
-- Windows 11 usually includes .NET Framework 4.8 or 4.8.1.
-- Windows 7 SP1 requires .NET Framework 4.8 to be installed manually.
+- Windows 7 SP1 / Windows 10 / Windows 11
+- Requires .NET Framework 4.8 or a later .NET Framework 4.x update
+- Windows 7 SP1 requires .NET Framework 4.8 to be installed manually
 
 ## Build
 
-The project keeps the traditional WinForms project structure and is intended to be built with Visual Studio or Build Tools.
-
-Recommended environment:
-
-- Visual Studio 2019 / 2022
-- .NET Framework 4.8 Developer Pack
-- MSBuild
-
-Build configuration:
+Use Visual Studio 2019 / 2022 or Build Tools:
 
 - Target framework: `.NET Framework 4.8`
 - Platform target: `x86`
-- Output type: `WinExe`
+- Configuration: `Release`
 
-## Modernization Notes
+## Release
 
-The first compatibility modernization pass has been completed:
+GitHub Actions provides a manual release workflow:
 
-- Upgraded from `.NET Framework 4.0 Client Profile` to `.NET Framework 4.8`
-- Removed Client Profile
-- Added `App.config` high DPI configuration
-- Added `app.manifest` OS compatibility declaration
-- Fixed multi-monitor coordinate handling
-- Removed frequent `GC.Collect()`
-- Fixed crashes caused by invalid RGB input
+[.github/workflows/release.yml](.github/workflows/release.yml)
 
-Roadmap and validation matrix:
+Run `Build and Release`, enter the build ref and release tag. The workflow builds `ColorPicker.exe`, compresses it as a ZIP file, and publishes it to GitHub Releases.
 
-[docs/HARNESS.md](docs/HARNESS.md)
+## Docs
 
-## Release Notes
-
-Release and maintenance notes are tracked in:
-
-[docs/CHANGELOG.md](docs/CHANGELOG.md)
-
-## Project History
-
-The original project was created in 2014 and later added keyboard shortcuts, double-click copy, RGB display, and manual RGB editing. See Release Notes for the full history.
-
-This maintained version focuses on modern Windows usage, especially multi-monitor support, high DPI behavior, performance, and build compatibility.
+- [Changelog](docs/CHANGELOG.md)
+- [Compatibility and validation checklist](docs/HARNESS.md)
 
 ## License
 
-Code in the ColorPicker project is licensed under the GPL.
+GPL

@@ -1,0 +1,218 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_ref:
+        description: "Branch, tag, or commit SHA to build"
+        required: true
+        default: "master"
+        type: string
+      release_tag:
+        description: "Release tag to create, for example v1.3.0"
+        required: true
+        type: string
+      release_name:
+        description: "Release title. Leave empty to use the tag"
+        required: false
+        type: string
+      prerelease:
+        description: "Mark this release as a prerelease"
+        required: true
+        default: false
+        type: boolean
+      draft:
+        description: "Create the release as a draft"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build x86 Release
+    runs-on: windows-latest
+
+    env:
+      CONFIGURATION: Release
+      PLATFORM: x86
+      SOLUTION_FILE: ColorPicker.sln
+      EXE_PATH: ColorPicker\bin\Release\ColorPicker.exe
+      PACKAGE_DIR: artifacts
+
+    steps:
+      - name: Checkout selected ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          fetch-depth: 0
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build
+        shell: pwsh
+        run: |
+          msbuild $env:SOLUTION_FILE `
+            /m `
+            /p:Configuration=$env:CONFIGURATION `
+            /p:Platform=$env:PLATFORM `
+            /p:RestorePackages=false
+
+      - name: Package EXE
+        id: package
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          $exePath = Join-Path $env:GITHUB_WORKSPACE $env:EXE_PATH
+          if (!(Test-Path -LiteralPath $exePath)) {
+            throw "Build output was not found: $exePath"
+          }
+
+          $shortSha = (git rev-parse --short=12 HEAD).Trim()
+          $safeTag = $env:RELEASE_TAG -replace '[^\w\.-]+', '-'
+          $zipName = "ColorPicker-$safeTag-$shortSha.zip"
+          $packageDir = Join-Path $env:GITHUB_WORKSPACE $env:PACKAGE_DIR
+          $zipPath = Join-Path $packageDir $zipName
+
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          if (Test-Path -LiteralPath $zipPath) {
+            Remove-Item -LiteralPath $zipPath -Force
+          }
+
+          Compress-Archive -LiteralPath $exePath -DestinationPath $zipPath -CompressionLevel Optimal
+
+          $md5 = (Get-FileHash -Algorithm MD5 -LiteralPath $zipPath).Hash.ToLowerInvariant()
+          $sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $zipPath).Hash.ToLowerInvariant()
+          $sizeBytes = (Get-Item -LiteralPath $zipPath).Length
+
+          "zip_name=$zipName" >> $env:GITHUB_OUTPUT
+          "zip_path=$zipPath" >> $env:GITHUB_OUTPUT
+          "md5=$md5" >> $env:GITHUB_OUTPUT
+          "sha256=$sha256" >> $env:GITHUB_OUTPUT
+          "size_bytes=$sizeBytes" >> $env:GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: notes
+        shell: pwsh
+        env:
+          BUILD_REF: ${{ inputs.build_ref }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_NAME: ${{ inputs.release_name }}
+          ZIP_NAME: ${{ steps.package.outputs.zip_name }}
+          ZIP_SIZE_BYTES: ${{ steps.package.outputs.size_bytes }}
+          ZIP_MD5: ${{ steps.package.outputs.md5 }}
+          ZIP_SHA256: ${{ steps.package.outputs.sha256 }}
+        run: |
+          function Escape-TableValue {
+            param([string]$Value)
+            if ($null -eq $Value) {
+              return ""
+            }
+
+            return ($Value -replace '\|', '\|')
+          }
+
+          $releaseName = $env:RELEASE_NAME
+          if ([string]::IsNullOrWhiteSpace($releaseName)) {
+            $releaseName = $env:RELEASE_TAG
+          }
+
+          $sha = (git rev-parse HEAD).Trim()
+          $shortSha = (git rev-parse --short=12 HEAD).Trim()
+          $commitSubject = Escape-TableValue((git log -1 --pretty=%s).Trim())
+          $commitAuthor = Escape-TableValue((git log -1 --pretty=%an).Trim())
+          $commitDate = (git log -1 --date=iso-strict --pretty=%ad).Trim()
+          $commitUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/commit/$sha"
+          $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+          $refName = Escape-TableValue($env:BUILD_REF)
+
+          $commitRows = git log -n 20 --date=short --pretty=format:'%h%x09%ad%x09%an%x09%s' | ForEach-Object {
+            $parts = $_ -split "`t", 4
+            $rowSha = Escape-TableValue($parts[0])
+            $rowDate = Escape-TableValue($parts[1])
+            $rowAuthor = Escape-TableValue($parts[2])
+            $rowSubject = Escape-TableValue($parts[3])
+            "| ``$rowSha`` | $rowDate | $rowAuthor | $rowSubject |"
+          }
+          $notesPath = Join-Path $env:GITHUB_WORKSPACE "release_notes.md"
+
+          $lines = @(
+            "## Release Summary",
+            "",
+            "| Field | Value |",
+            "|---|---|",
+            "| Build ref | `$refName` |",
+            "| Commit | [`$shortSha`]($commitUrl) |",
+            "| Commit subject | $commitSubject |",
+            "| Commit author | $commitAuthor |",
+            "| Commit date | $commitDate |",
+            "",
+            "## Runner",
+            "",
+            "| Field | Value |",
+            "|---|---|",
+            "| Workflow | $env:GITHUB_WORKFLOW |",
+            "| Run | [$env:GITHUB_RUN_NUMBER / attempt $env:GITHUB_RUN_ATTEMPT]($runUrl) |",
+            "| Runner OS | $env:RUNNER_OS |",
+            "| Runner architecture | $env:RUNNER_ARCH |",
+            "| Runner name | $env:RUNNER_NAME |",
+            "",
+            "## Package Checksums",
+            "",
+            "| File | Size bytes | MD5 | SHA256 |",
+            "|---|---:|---|---|",
+            "| `$($env:ZIP_NAME)` | $($env:ZIP_SIZE_BYTES) | `$($env:ZIP_MD5)` | `$($env:ZIP_SHA256)` |",
+            "",
+            "## Recent Commits",
+            "",
+            "| Commit | Date | Author | Subject |",
+            "|---|---|---|---|"
+          )
+
+          $lines += $commitRows
+          $lines | Set-Content -LiteralPath $notesPath -Encoding UTF8
+
+          "release_name=$releaseName" >> $env:GITHUB_OUTPUT
+          "notes_path=$notesPath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.zip_name }}
+          path: ${{ steps.package.outputs.zip_path }}
+          if-no-files-found: error
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_NAME: ${{ steps.notes.outputs.release_name }}
+          RELEASE_NOTES_PATH: ${{ steps.notes.outputs.notes_path }}
+          ZIP_PATH: ${{ steps.package.outputs.zip_path }}
+          PRERELEASE: ${{ inputs.prerelease }}
+          DRAFT: ${{ inputs.draft }}
+        run: |
+          $targetSha = (git rev-parse HEAD).Trim()
+          $ghArgs = @(
+            "release", "create", $env:RELEASE_TAG,
+            $env:ZIP_PATH,
+            "--repo", "$env:GITHUB_REPOSITORY",
+            "--target", $targetSha,
+            "--title", $env:RELEASE_NAME,
+            "--notes-file", $env:RELEASE_NOTES_PATH
+          )
+
+          if ($env:PRERELEASE -eq "true") {
+            $ghArgs += "--prerelease"
+          }
+
+          if ($env:DRAFT -eq "true") {
+            $ghArgs += "--draft"
+          }
+
+          gh @ghArgs
