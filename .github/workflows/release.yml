@@ -75,46 +75,39 @@ jobs:
           $safeTag = $env:RELEASE_TAG -replace '[^\w\.-]+', '-'
           $zipName = "ColorPicker-$safeTag-$shortSha.zip"
           $packageDir = Join-Path $env:GITHUB_WORKSPACE $env:PACKAGE_DIR
+          $stagingDir = Join-Path $packageDir "staging"
           $zipPath = Join-Path $packageDir $zipName
 
           New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          if (Test-Path -LiteralPath $stagingDir) {
+            Remove-Item -LiteralPath $stagingDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path $stagingDir | Out-Null
           if (Test-Path -LiteralPath $zipPath) {
             Remove-Item -LiteralPath $zipPath -Force
           }
 
-          Compress-Archive -LiteralPath $exePath -DestinationPath $zipPath -CompressionLevel Optimal
+          Copy-Item -LiteralPath $exePath -Destination $stagingDir
+          Compress-Archive -LiteralPath (Join-Path $stagingDir "ColorPicker.exe") -DestinationPath $zipPath -CompressionLevel Optimal
 
           $md5 = (Get-FileHash -Algorithm MD5 -LiteralPath $zipPath).Hash.ToLowerInvariant()
           $sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $zipPath).Hash.ToLowerInvariant()
-          $sizeBytes = (Get-Item -LiteralPath $zipPath).Length
 
           "zip_name=$zipName" >> $env:GITHUB_OUTPUT
           "zip_path=$zipPath" >> $env:GITHUB_OUTPUT
           "md5=$md5" >> $env:GITHUB_OUTPUT
           "sha256=$sha256" >> $env:GITHUB_OUTPUT
-          "size_bytes=$sizeBytes" >> $env:GITHUB_OUTPUT
 
       - name: Generate release notes
         id: notes
         shell: pwsh
         env:
-          BUILD_REF: ${{ inputs.build_ref || github.ref_name }}
           RELEASE_TAG: ${{ inputs.release_tag }}
           RELEASE_NAME: ${{ inputs.release_name }}
           ZIP_NAME: ${{ steps.package.outputs.zip_name }}
-          ZIP_SIZE_BYTES: ${{ steps.package.outputs.size_bytes }}
           ZIP_MD5: ${{ steps.package.outputs.md5 }}
           ZIP_SHA256: ${{ steps.package.outputs.sha256 }}
         run: |
-          function Escape-TableValue {
-            param([string]$Value)
-            if ($null -eq $Value) {
-              return ""
-            }
-
-            return ($Value -replace '\|', '\|')
-          }
-
           $releaseName = $env:RELEASE_NAME
           if ([string]::IsNullOrWhiteSpace($releaseName)) {
             $releaseName = $env:RELEASE_TAG
@@ -122,57 +115,27 @@ jobs:
 
           $sha = (git rev-parse HEAD).Trim()
           $shortSha = (git rev-parse --short=12 HEAD).Trim()
-          $commitSubject = Escape-TableValue((git log -1 --pretty=%s).Trim())
-          $commitAuthor = Escape-TableValue((git log -1 --pretty=%an).Trim())
-          $commitDate = (git log -1 --date=iso-strict --pretty=%ad).Trim()
           $commitUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/commit/$sha"
           $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
-          $refName = Escape-TableValue($env:BUILD_REF)
-
-          $commitRows = git log -n 20 --date=short --pretty=format:'%h%x09%ad%x09%an%x09%s' | ForEach-Object {
-            $parts = $_ -split "`t", 4
-            $rowSha = Escape-TableValue($parts[0])
-            $rowDate = Escape-TableValue($parts[1])
-            $rowAuthor = Escape-TableValue($parts[2])
-            $rowSubject = Escape-TableValue($parts[3])
-            "| ``$rowSha`` | $rowDate | $rowAuthor | $rowSubject |"
-          }
           $notesPath = Join-Path $env:GITHUB_WORKSPACE "release_notes.md"
 
           $lines = @(
-            "## Release Summary",
+            "## Trace",
             "",
-            "| Field | Value |",
+            "| Field | Link |",
             "|---|---|",
-            "| Build ref | `$refName` |",
             "| Commit | [`$shortSha`]($commitUrl) |",
-            "| Commit subject | $commitSubject |",
-            "| Commit author | $commitAuthor |",
-            "| Commit date | $commitDate |",
+            "| Runner | [$env:GITHUB_RUN_NUMBER / attempt $env:GITHUB_RUN_ATTEMPT]($runUrl) |",
             "",
-            "## Runner",
+            "## File Hashes",
             "",
             "| Field | Value |",
             "|---|---|",
-            "| Workflow | $env:GITHUB_WORKFLOW |",
-            "| Run | [$env:GITHUB_RUN_NUMBER / attempt $env:GITHUB_RUN_ATTEMPT]($runUrl) |",
-            "| Runner OS | $env:RUNNER_OS |",
-            "| Runner architecture | $env:RUNNER_ARCH |",
-            "| Runner name | $env:RUNNER_NAME |",
-            "",
-            "## Package Checksums",
-            "",
-            "| File | Size bytes | MD5 | SHA256 |",
-            "|---|---:|---|---|",
-            "| `$($env:ZIP_NAME)` | $($env:ZIP_SIZE_BYTES) | `$($env:ZIP_MD5)` | `$($env:ZIP_SHA256)` |",
-            "",
-            "## Recent Commits",
-            "",
-            "| Commit | Date | Author | Subject |",
-            "|---|---|---|---|"
+            "| File | `$($env:ZIP_NAME)` |",
+            "| MD5 | `$($env:ZIP_MD5)` |",
+            "| SHA256 | `$($env:ZIP_SHA256)` |"
           )
 
-          $lines += $commitRows
           $lines | Set-Content -LiteralPath $notesPath -Encoding UTF8
 
           "release_name=$releaseName" >> $env:GITHUB_OUTPUT

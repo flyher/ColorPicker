@@ -40,7 +40,7 @@ GitHub Actions provides a manual release workflow:
 
 [.github/workflows/release.yml](.github/workflows/release.yml)
 
-Run `Build and Release`, select the workflow branch, and enter the release tag. Leave `build_ref` empty unless you need to build another branch, tag, or SHA.
+Run `Build and Release`, select the workflow branch, and enter the release tag. The ZIP contains only `ColorPicker.exe`.
 
 ## Docs
 

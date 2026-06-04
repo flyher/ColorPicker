@@ -50,8 +50,9 @@
 GitHub Release 应包含：
 
 - `ColorPicker-<tag>-<sha>.zip`
-- Release notes 中的 commit 链接
-- Runner 信息
+- ZIP 内仅包含 `ColorPicker.exe`
+- Release notes 中的最后 commit 链接
+- GitHub Actions runner 链接
 - ZIP 的 MD5 和 SHA256
 
 ## 参考
