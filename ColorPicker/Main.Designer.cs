@@ -138,30 +138,30 @@
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 73);
+            this.label4.Location = new System.Drawing.Point(7, 64);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(11, 12);
+            this.label4.Size = new System.Drawing.Size(24, 21);
             this.label4.TabIndex = 0;
             this.label4.Text = "B";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 46);
+            this.label3.Location = new System.Drawing.Point(7, 37);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(11, 12);
+            this.label3.Size = new System.Drawing.Size(24, 21);
             this.label3.TabIndex = 0;
             this.label3.Text = "G";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 21);
+            this.label2.Location = new System.Drawing.Point(7, 12);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(11, 12);
+            this.label2.Size = new System.Drawing.Size(24, 21);
             this.label2.TabIndex = 0;
             this.label2.Text = "R";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Main
             // 

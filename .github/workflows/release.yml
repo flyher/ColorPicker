@@ -116,19 +116,16 @@ jobs:
           $sha = (git rev-parse HEAD).Trim()
           $shortSha = (git rev-parse --short=12 HEAD).Trim()
           $sourceRef = "${{ inputs.build_ref || github.ref_name }}"
+          $branchUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/tree/$sourceRef"
           $commitUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/commit/$sha"
           $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
           $runnerLabel = "$($env:GITHUB_RUN_NUMBER) / attempt $($env:GITHUB_RUN_ATTEMPT)"
           $notesPath = Join-Path $env:GITHUB_WORKSPACE "release_notes.md"
 
           $lines = @(
-            "## Trace",
-            "",
-            "- Branch: ``$sourceRef``",
+            "- Branch: [$sourceRef]($branchUrl)",
             "- Commit: [$shortSha]($commitUrl)",
             "- Runner: [$runnerLabel]($runUrl)",
-            "",
-            "## File Hashes",
             "",
             "| zip | check |",
             "|---|---|",

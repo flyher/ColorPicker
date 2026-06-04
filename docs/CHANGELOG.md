@@ -10,9 +10,11 @@
 - 开启窗体 `KeyPreview`，提升 `P` / `E` 快捷键可用性。
 - 移除自定义 `app.manifest` 嵌入，修复 side-by-side 启动错误。
 - 在程序启动时声明 DPI aware，改善高 DPI 下文字发糊问题。
+- 对齐 R/G/B 标签和输入框，改善 DPI aware 后的控件错位。
 - 新增中文 / 英文 README、兼容性清单和发布日志文档。
 - 新增 GitHub Actions 手动发布流水线，构建 EXE、压缩 ZIP 并发布到 GitHub Release。
 - Release notes 包含构建分支、最后 commit 链接、runner 链接，以及 ZIP 的 MD5 / SHA256。
+- Release notes 去掉 `Trace` / `File Hashes` 标题，并将分支名链接到源码分支地址。
 - ZIP 包保持单文件分发，仅包含 `ColorPicker.exe`。
 - GitHub Actions 官方 actions 更新到 `actions/checkout@v6.0.3` 和 `actions/upload-artifact@v7.0.1`。
 - 清理已跟踪的 `.suo`、`obj`、zip 构建产物。
