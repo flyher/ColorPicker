@@ -43,13 +43,13 @@ jobs:
 
     steps:
       - name: Checkout selected ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.3
         with:
           ref: ${{ inputs.build_ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Build
         shell: pwsh
@@ -117,23 +117,22 @@ jobs:
           $shortSha = (git rev-parse --short=12 HEAD).Trim()
           $commitUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/commit/$sha"
           $runUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+          $runnerLabel = "$($env:GITHUB_RUN_NUMBER) / attempt $($env:GITHUB_RUN_ATTEMPT)"
           $notesPath = Join-Path $env:GITHUB_WORKSPACE "release_notes.md"
 
           $lines = @(
             "## Trace",
             "",
-            "| Field | Link |",
-            "|---|---|",
-            "| Commit | [`$shortSha`]($commitUrl) |",
-            "| Runner | [$env:GITHUB_RUN_NUMBER / attempt $env:GITHUB_RUN_ATTEMPT]($runUrl) |",
+            "- Commit: [$shortSha]($commitUrl)",
+            "- Runner: [$runnerLabel]($runUrl)",
             "",
             "## File Hashes",
             "",
             "| Field | Value |",
             "|---|---|",
-            "| File | `$($env:ZIP_NAME)` |",
-            "| MD5 | `$($env:ZIP_MD5)` |",
-            "| SHA256 | `$($env:ZIP_SHA256)` |"
+            "| File | ``$($env:ZIP_NAME)`` |",
+            "| MD5 | ``$($env:ZIP_MD5)`` |",
+            "| SHA256 | ``$($env:ZIP_SHA256)`` |"
           )
 
           $lines | Set-Content -LiteralPath $notesPath -Encoding UTF8
@@ -142,7 +141,7 @@ jobs:
           "notes_path=$notesPath" >> $env:GITHUB_OUTPUT
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ steps.package.outputs.zip_name }}
           path: ${{ steps.package.outputs.zip_path }}

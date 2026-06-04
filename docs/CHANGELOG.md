@@ -6,7 +6,7 @@
 
 - 新增英文 README、兼容性清单和发布日志文档。
 - 新增 GitHub Actions 手动发布流水线，构建 EXE、压缩 ZIP 并发布到 GitHub Release。
-- 新增 `App.config` 高 DPI 配置和 `app.manifest` Windows 兼容声明。
+- 新增 `App.config` 高 DPI 配置。
 - Release notes 仅包含最后 commit 链接、runner 链接，以及 ZIP 的 MD5 / SHA256。
 
 ### Changed
@@ -17,11 +17,13 @@
 - 精简 README，仅保留使用、兼容性、构建、发布和文档入口。
 - 将 GitHub Actions 的 `build_ref` 改为可选，默认构建手动触发页面选择的分支。
 - ZIP 包保持单文件分发，仅包含 `ColorPicker.exe`。
+- GitHub Actions 官方 actions 更新到 `actions/checkout@v6.0.3` 和 `actions/upload-artifact@v7.0.1`。
 
 ### Fixed
 
 - 修复 GitHub Release notes 展示过多提交记录的问题。
-- 修复应用 manifest 缺少标准 Win32 identity 属性导致的 side-by-side 启动风险。
+- 移除自定义 `app.manifest` 嵌入，修复 side-by-side 启动错误。
+- 修复 Release notes 中 hash 值显示为 `$()` 字面量的问题。
 - 修复多显示器取色问题，包括副屏负坐标场景。
 - 修复 RGB 非数字、负数或大于 255 时可能崩溃的问题。
 - 开启窗体 `KeyPreview`，提升 `P` / `E` 快捷键在不同焦点状态下的可用性。
