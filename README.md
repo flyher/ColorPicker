@@ -11,7 +11,7 @@
 - 实时读取鼠标所在像素颜色
 - 显示并复制 HEX / RGB 色值
 - 停止取色后可手动输入 RGB 调色
-- 支持多显示器取色
+- 支持多显示器取色，包括不同 DPI 缩放
 - 面向 .NET Framework 4.8
 
 ## 使用
@@ -40,7 +40,7 @@ GitHub Actions 提供手动发布流水线：
 
 [.github/workflows/release.yml](.github/workflows/release.yml)
 
-运行 `Build and Release`，选择 workflow 分支并输入 release tag。ZIP 内仅包含 `ColorPicker.exe`。
+运行 `Build and Release`，选择 workflow 分支并输入版本号。ZIP 内仅包含 `ColorPicker.exe`。
 
 ## 文档
 

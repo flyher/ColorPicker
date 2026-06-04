@@ -11,7 +11,7 @@ A lightweight screen color picker for Windows.
 - Pick the color under the mouse in real time
 - Display and copy HEX / RGB values
 - Edit RGB values manually after stopping live picking
-- Support multi-monitor color picking
+- Support multi-monitor color picking, including mixed DPI scaling
 - Target .NET Framework 4.8
 
 ## Usage
@@ -40,7 +40,7 @@ GitHub Actions provides a manual release workflow:
 
 [.github/workflows/release.yml](.github/workflows/release.yml)
 
-Run `Build and Release`, select the workflow branch, and enter the release tag. The ZIP contains only `ColorPicker.exe`.
+Run `Build and Release`, select the workflow branch, and enter the version number. The ZIP contains only `ColorPicker.exe`.
 
 ## Docs
 

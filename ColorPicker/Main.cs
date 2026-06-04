@@ -28,6 +28,13 @@ namespace ColorPicker
         bool canChangeColor = false;
         const int InvalidColor = -1;
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NativePoint
+        {
+            public int X;
+            public int Y;
+        }
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetDC(IntPtr hWnd);
 
@@ -36,6 +43,9 @@ namespace ColorPicker
 
         [DllImport("gdi32.dll")]
         private static extern int GetPixel(IntPtr hdc, int nXPos, int nYPos);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out NativePoint lpPoint);
 
         private void txtColor_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -123,8 +133,14 @@ namespace ColorPicker
         /*屏幕取色*/
         public Color GetColor()
         {
-            Point p = Control.MousePosition;    //得到当前鼠标坐标 
-            return GetScrPixel(p);              //取色方法，传参p 当前坐标
+            NativePoint cursorPoint;
+            if (!GetCursorPos(out cursorPoint))
+            {
+                return Color.Empty;
+            }
+
+            Point p = new Point(cursorPoint.X, cursorPoint.Y);
+            return GetScrPixel(p);
         }
         /// <summary>
         /// 取色方法

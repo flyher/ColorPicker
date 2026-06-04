@@ -14,6 +14,7 @@
 
 - 选择 `.NET Framework 4.8`，覆盖 Windows 7 SP1 到 Windows 11。
 - 保持 `x86`，兼容 32 位 Windows 7 和 64 位 Windows。
+- DPI awareness 按系统能力降级：Windows 10/11 优先 `PerMonitorV2`，旧系统退回 `PerMonitor` 或 `System DPI aware`。
 - 不继续支持 XP / Vista。
 - 现代 .NET self-contained 发布暂不采用，避免扩大改造范围。
 
@@ -21,14 +22,17 @@
 
 - [x] 从 `.NET Framework 4.0 Client Profile` 升级到 `.NET Framework 4.8`
 - [x] 删除 Client Profile
-- [x] 在程序启动时声明 DPI aware，改善高 DPI 模糊
+- [x] 在程序启动时声明 Per-Monitor DPI aware，改善高 DPI 模糊和多屏缩放坐标偏差
+- [x] 移除 `App.config`，保持单 EXE 发布产物
 - [x] 移除自定义 `app.manifest` 嵌入，避免 side-by-side 启动错误
 - [x] 修复多显示器取色坐标问题
+- [x] 使用 Win32 `GetCursorPos` 获取鼠标位置，避免 WinForms 坐标虚拟化影响取色
 - [x] 取色改为 Win32 `GetDC/GetPixel` 单像素读取
 - [x] 删除高频整屏截图和 `GC.Collect()`
 - [x] 修复 RGB 非法输入崩溃
 - [x] 清理已跟踪的 `.suo`、`obj`、zip 构建产物
 - [x] 新增 GitHub Actions 手动发布流水线
+- [x] 发布 workflow 使用手动版本号更新 EXE `File version`
 
 ## 待验证
 
@@ -39,6 +43,7 @@
 - [ ] 单屏取色
 - [ ] 多屏取色，副屏在右侧
 - [ ] 多屏取色，副屏在左侧或上方
+- [ ] 多屏取色，主屏 / 副屏使用不同 DPI 缩放
 - [ ] 100% / 125% / 150% / 200% DPI 缩放
 - [ ] RGB 合法输入：`0-255`
 - [ ] RGB 非法输入：非数字、负数、大于 255

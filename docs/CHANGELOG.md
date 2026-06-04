@@ -3,7 +3,10 @@
 ## 2026-06-04
 
 - 升级到 `.NET Framework 4.8`，删除 Client Profile，保持 `x86` 平台目标。
-- 修复多显示器取色问题，包括副屏负坐标场景。
+- 修复多显示器取色问题，包括副屏负坐标和多屏不同 DPI 缩放场景。
+- 取色坐标改为 Win32 `GetCursorPos`，减少 WinForms 坐标虚拟化导致的偏差。
+- DPI 声明改为优先 `PerMonitorV2`，再降级到 `PerMonitor` / `System DPI aware`。
+- 移除 `App.config`，避免本地构建生成非必要 `.exe.config`。
 - 取色改为 Win32 `GetDC/GetPixel` 单像素读取，避免高频整屏截图。
 - 删除高频 `GC.Collect()`，降低取色时的卡顿风险。
 - 修复 RGB 非数字、负数或大于 255 时可能崩溃的问题。
@@ -15,6 +18,7 @@
 - 新增 GitHub Actions 手动发布流水线，构建 EXE、压缩 ZIP 并发布到 GitHub Release。
 - Release notes 包含构建分支、最后 commit 链接、runner 链接，以及 ZIP 的 MD5 / SHA256。
 - Release notes 去掉 `Trace` / `File Hashes` 标题，并将分支名链接到源码分支地址。
+- 发布 workflow 输入从 `release_tag` 改为 `version`，并在构建前写入 EXE `File version`。
 - ZIP 包保持单文件分发，仅包含 `ColorPicker.exe`。
 - GitHub Actions 官方 actions 更新到 `actions/checkout@v6.0.3` 和 `actions/upload-artifact@v7.0.1`。
 - 清理已跟踪的 `.suo`、`obj`、zip 构建产物。
