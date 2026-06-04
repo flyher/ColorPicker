@@ -1,62 +1,95 @@
-ColorPicker
-===========
+# ColorPicker
 
-###### A tool to pick web/window color, help design your soft.
+[English](README.en.md) | 简体中文
 
-![](file/screenshot.png)
+一个轻量、直接、为 Windows 桌面设计的屏幕取色器。
 
-===
+![ColorPicker screenshot](file/screenshot.png)
 
-更新时间:2017-05-01
+## Highlights
 
-增加:
+- 实时读取鼠标所在像素颜色
+- 显示 HEX、R、G、B 色值
+- 双击即可复制 HEX 或单独的 RGB 通道值
+- 支持停止取色后手动输入 RGB 调色
+- 修复旧版本多显示器取色异常
+- 使用 Win32 单像素读取，避免高频整屏截图
+- 面向 .NET Framework 4.8，覆盖 Windows 7 SP1 到 Windows 11 的兼容路线
+- 启用基础高 DPI 配置，适配现代高分屏环境
 
-1.stop状态下支持R，G，B输入色值调色
+## Quick Start
 
+打开程序后点击 `Start(P)` 开始取色，移动鼠标即可实时更新当前像素颜色。
 
-===
+点击 `Stop(E)` 后可以手动编辑 R、G、B 数值，预览区域会同步显示对应颜色。
 
-2017-03-04
+可复制内容：
 
-已知bug：
+- 双击 HEX 输入框复制完整颜色值，例如 `#04A85F`
+- 双击 R / G / B 输入框复制单个通道值
 
-取多屏颜色时程序错误。
+## Compatibility
 
-懒得改了，目前只要将需要取色的地方移到主屏就行了。
+推荐运行环境：
 
+- Windows 7 SP1
+- Windows 10
+- Windows 11
 
-===
+运行依赖：
 
-更新时间:2016-03-10
+- .NET Framework 4.8 或更高的 .NET Framework 4.x 就地更新版本
 
-增加:
+说明：
 
-1.R，G，B色值显示
+- Windows 10 新版本通常自带 .NET Framework 4.8。
+- Windows 11 通常自带 .NET Framework 4.8 或 4.8.1。
+- Windows 7 SP1 需要手动安装 .NET Framework 4.8。
 
-===
+## Build
 
-更新时间:2014-07-01
+项目仍保留传统 WinForms 工程结构，适合用 Visual Studio 或 Build Tools 编译。
 
-修正:
+建议环境：
 
-1.某些颜色和某些青色取色失败；
+- Visual Studio 2019 / 2022
+- .NET Framework 4.8 Developer Pack
+- MSBuild
 
-(原因：取色数值首位为0忽略了，例如#04A85F墨绿色，取色器丢掉了首位0)
+构建配置：
 
-创建时间:2014-02-27
+- Target framework: `.NET Framework 4.8`
+- Platform target: `x86`
+- Output type: `WinExe`
 
-更新时间:2014-04-14
+## Modernization Notes
 
-增加:
+本仓库已完成第一轮兼容性改造：
 
-1.取色快捷键;
+- 从 `.NET Framework 4.0 Client Profile` 升级到 `.NET Framework 4.8`
+- 删除 Client Profile
+- 新增 `App.config` 高 DPI 配置
+- 新增 `app.manifest` 系统兼容声明
+- 修复多屏取色坐标问题
+- 删除高频 `GC.Collect()`
+- 修复 RGB 非法输入导致的崩溃
 
-2.双击复制代码;
+后续计划与验证矩阵见：
 
-已知bug:
+[docs/HARNESS.md](docs/HARNESS.md)
 
-1.某些蓝色和某些青色取色失败.
+## Release Notes
 
-### License
+每次发布和维护改造都会记录在：
+
+[docs/CHANGELOG.md](docs/CHANGELOG.md)
+
+## Project History
+
+原项目创建于 2014 年，后续增加了快捷键、双击复制、RGB 显示和手动 RGB 调色能力。完整历史记录见 Release Notes。
+
+本维护版本主要面向现代 Windows 使用场景，重点改善多显示器、高 DPI、性能和构建兼容性。
+
+## License
 
 Code in the ColorPicker project is licensed under the GPL.

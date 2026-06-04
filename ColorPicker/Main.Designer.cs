@@ -174,6 +174,7 @@
             this.Controls.Add(this.txtColor);
             this.Controls.Add(this.pbColor);
             this.Controls.Add(this.btnStart);
+            this.KeyPreview = true;
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ColorPicker";

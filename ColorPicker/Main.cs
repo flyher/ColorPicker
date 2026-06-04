@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Threading;
 
 namespace ColorPicker
 {
@@ -31,6 +26,16 @@ namespace ColorPicker
         Color c;
         string color;
         bool canChangeColor = false;
+        const int InvalidColor = -1;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        [DllImport("gdi32.dll")]
+        private static extern int GetPixel(IntPtr hdc, int nXPos, int nYPos);
 
         private void txtColor_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -81,19 +86,13 @@ namespace ColorPicker
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Dictionary<Color, string> dic_Color = GetColor();
-
-            foreach (var item in dic_Color)
+            Color pickedColor = GetColor();
+            if (pickedColor.IsEmpty)
             {
-                c = item.Key;
-                color = item.Value;
+                return;
             }
-            pbColor.BackColor = c;
-            txtColor.Text = color;
 
-            txtR.Text = c.R.ToString();
-            txtG.Text = c.G.ToString();
-            txtB.Text = c.B.ToString();
+            UpdateColorDisplay(pickedColor, true);
         }
 
         private void txtR_TextChanged(object sender, EventArgs e)
@@ -122,21 +121,10 @@ namespace ColorPicker
 
         #region 内部方法
         /*屏幕取色*/
-        public Dictionary<Color, string> GetColor()
+        public Color GetColor()
         {
-            int r, g, b;
             Point p = Control.MousePosition;    //得到当前鼠标坐标 
-            Color c = GetScrPixel(p);           //取色方法，传参p 当前坐标
-            r = c.R;
-            g = c.G;
-            b = c.B;
-            //这种方式不准确，使用系统自带的转换方式
-            //string res = "#" + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(r, 16)) + (Convert.ToString(g, 16) == "0" ? "00" : Convert.ToString(g, 16)) + (Convert.ToString(r, 16) == "0" ? "00" : Convert.ToString(b, 16));  //rgb文本框写的内容
-            string res = ColorTranslator.ToHtml(c).ToUpper();
-            Dictionary<Color, string> dic_Color = new Dictionary<Color, string>();
-            dic_Color.Add(c, res);
-            //System.GC.Collect();        //内存垃圾回收
-            return dic_Color;
+            return GetScrPixel(p);              //取色方法，传参p 当前坐标
         }
         /// <summary>
         /// 取色方法
@@ -145,32 +133,65 @@ namespace ColorPicker
         /// <returns>返回颜色</returns>
         private static Color GetScrPixel(Point pt)
         {
-            var scrBound = Screen.PrimaryScreen.Bounds;
-            using (var bmp = new Bitmap(scrBound.Width, scrBound.Height))
+            IntPtr desktopDc = GetDC(IntPtr.Zero);
+            if (desktopDc == IntPtr.Zero)
             {
-                using (var g = Graphics.FromImage(bmp))
+                return Color.Empty;
+            }
+
+            try
+            {
+                int colorRef = GetPixel(desktopDc, pt.X, pt.Y);
+                if (colorRef == InvalidColor)
                 {
-                    g.CopyFromScreen(scrBound.Location, scrBound.Location, scrBound.Size);
+                    return Color.Empty;
                 }
-                System.GC.Collect();
-                return bmp.GetPixel(pt.X, pt.Y);
+
+                int r = colorRef & 0x000000FF;
+                int g = (colorRef & 0x0000FF00) >> 8;
+                int b = (colorRef & 0x00FF0000) >> 16;
+                return Color.FromArgb(r, g, b);
+            }
+            finally
+            {
+                ReleaseDC(IntPtr.Zero, desktopDc);
             }
         }
 
 
         private void SetColor()
         {
-            Invoke(new Action(()=> {
-                int r = 0, g = 0, b = 0;
-                 
-                r = Convert.ToInt32((txtR.Text.Trim().Length == 0 || txtR.Text.Trim().Length>3) ? "0" : txtR.Text.Trim());
-                g = Convert.ToInt32((txtG.Text.Trim().Length == 0 || txtG.Text.Trim().Length > 3) ? "0" : txtG.Text.Trim());
-                b = Convert.ToInt32((txtB.Text.Trim().Length == 0 || txtB.Text.Trim().Length > 3) ? "0" : txtB.Text.Trim());
-                Color c = Color.FromArgb(r, g, b);
+            int r, g, b;
+            if (!TryReadColorComponent(txtR, out r) ||
+                !TryReadColorComponent(txtG, out g) ||
+                !TryReadColorComponent(txtB, out b))
+            {
+                return;
+            }
 
-                pbColor.BackColor = c;
-                txtColor.Text= ColorTranslator.ToHtml(c).ToUpper();
-            }));
+            UpdateColorDisplay(Color.FromArgb(r, g, b), false);
+        }
+
+        private static bool TryReadColorComponent(TextBox textBox, out int value)
+        {
+            string text = textBox.Text.Trim();
+            return int.TryParse(text, out value) && value >= 0 && value <= 255;
+        }
+
+        private void UpdateColorDisplay(Color selectedColor, bool updateRgbText)
+        {
+            c = selectedColor;
+            color = ColorTranslator.ToHtml(c).ToUpperInvariant();
+
+            pbColor.BackColor = c;
+            txtColor.Text = color;
+
+            if (updateRgbText)
+            {
+                txtR.Text = c.R.ToString();
+                txtG.Text = c.G.ToString();
+                txtB.Text = c.B.ToString();
+            }
         }
 
         #endregion
